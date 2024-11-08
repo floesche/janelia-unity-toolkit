@@ -164,7 +164,7 @@ namespace Janelia
         }
 
         private SocketMessageReader.Delimiter HEADER = SocketMessageReader.Header((Byte)'F');
-        private const Byte SEPARATOR = (Byte)',';    
+        private const Byte SEPARATOR = (Byte)',';
         SocketMessageReader _socketMessageReader;
 
         private Vector3[] _dataForSmoothing;

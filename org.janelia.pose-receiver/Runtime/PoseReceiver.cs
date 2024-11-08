@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Janelia
@@ -22,12 +25,16 @@ namespace Janelia
 
         public void Start()
         {
+            
             _socketMessageReader = new SocketMessageReader(HEADER, server, port, readBufferSizeBytes, readBufferCount);
             _socketMessageReader.Start();
 
             _received = new bool[controlled.Length];
             _position = new Vector3[controlled.Length];
             _eulerAngles = new Vector3[controlled.Length];
+            for (int i = 0; i < controlled.Length; ++i) {
+                _eulerAngles[i] = Vector3.zero;
+             }
         }
 
         public void Update()
@@ -51,10 +58,8 @@ namespace Janelia
                     obj.transform.position = _position[i];
                     obj.transform.eulerAngles = _eulerAngles[i];
 
-                    if (tweakReceivedPoseDelegate != null)
-                    {
-                        tweakReceivedPoseDelegate(obj.transform);
-                    }
+                    tweakReceivedPoseDelegate?.Invoke(obj.transform);                        
+                   
                 }
             }
         }
@@ -75,6 +80,8 @@ namespace Janelia
             while (_socketMessageReader.GetNextMessage(ref dataFromSocket, ref dataTimestampMs, ref i0))
             {
                 bool valid = true;
+
+                long receivedTimestampMs = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
                 int i1 = 0, len1 = 0;
                 IoUtilities.NthSplit(dataFromSocket, SEPARATOR, i0, 1, ref i1, ref len1);
@@ -106,22 +113,22 @@ namespace Janelia
                         Debug.Log("PoseReceiver.GetNextMessage() failed to parse column 3 (position X)");
                         return;
                     }
-
+                    
                     int i4 = 0, len4 = 0;
                     IoUtilities.NthSplit(dataFromSocket, SEPARATOR, i0, 4, ref i4, ref len4);
-                    float y = (float)IoUtilities.ParseDouble(dataFromSocket, i4, len4, ref valid);
+                    float z = (float)IoUtilities.ParseDouble(dataFromSocket, i4, len4, ref valid);
                     if (!valid)
                     {
-                        Debug.Log("PoseReceiver.GetNextMessage() failed to parse column 4 (position Y)");
+                        Debug.Log("PoseReceiver.GetNextMessage() failed to parse column 4 (position Y/Z)");
                         return;
                     }
-
+                    
                     int i5 = 0, len5 = 0;
                     IoUtilities.NthSplit(dataFromSocket, SEPARATOR, i0, 5, ref i5, ref len5);
-                    float z = (float)IoUtilities.ParseDouble(dataFromSocket, i5, len5, ref valid);
+                    float y = (float)IoUtilities.ParseDouble(dataFromSocket, i5, len5, ref valid);
                     if (!valid)
                     {
-                        Debug.Log("PoseReceiver.GetNextMessage() failed to parse column 5 (position Z)");
+                        Debug.Log("PoseReceiver.GetNextMessage() failed to parse column 5 (position Z/Y)");
                         return;
                     }
 
@@ -138,19 +145,19 @@ namespace Janelia
 
                     int i7 = 0, len7 = 0;
                     IoUtilities.NthSplit(dataFromSocket, SEPARATOR, i0, 7, ref i7, ref len7);
-                    float ey = (float)IoUtilities.ParseDouble(dataFromSocket, i7, len7, ref valid);
+                    float ez = (float)IoUtilities.ParseDouble(dataFromSocket, i7, len7, ref valid);
                     if (!valid)
                     {
-                        Debug.Log("PoseReceiver.GetNextMessage() failed to parse column 7 (angle Y)");
+                        Debug.Log("PoseReceiver.GetNextMessage() failed to parse column 7 (angle Y/Z)");
                         return;
                     }
 
                     int i8 = 0, len8 = 0;
                     IoUtilities.NthSplit(dataFromSocket, SEPARATOR, i0, 8, ref i8, ref len8);
-                    float ez = (float)IoUtilities.ParseDouble(dataFromSocket, i8, len8, ref valid);
+                    float ey = (float)IoUtilities.ParseDouble(dataFromSocket, i8, len8, ref valid);
                     if (!valid)
                     {
-                        Debug.Log("PoseReceiver.GetNextMessage() failed to parse column 8 (angle Z)");
+                        Debug.Log("PoseReceiver.GetNextMessage() failed to parse column 8 (angle Z/Y)");
                         return;
                     }
 
@@ -167,11 +174,19 @@ namespace Janelia
 
                     long latencyMs = finalTimestampMs - sentTimestampMs;
 
+
+
                     _latencySum += latencyMs;
                     _latencyCount += 1;
+                    _latencyCsv.Add(
+                        sentTimestampMs.ToString() + "," + 
+                        receivedTimestampMs.ToString() + "," +
+                        finalTimestampMs.ToString() + "," +
+                        latencyMs.ToString());
                     if (_latencyCount % 1000 == 0)
                     {
-                        Debug.Log("Mean latency " + (((float)_latencySum) / _latencyCount) + " ms");
+                        Debug.Log("Mean latency camera -> projector" + (((float)_latencySum) / _latencyCount) + " ms");
+                        WriteLatencyLog();
                         _latencySum = 0;
                         _latencyCount = 0;
                     }
@@ -179,7 +194,37 @@ namespace Janelia
             }
         }
 
-        private SocketMessageReader.Delimiter HEADER = SocketMessageReader.Header((Byte)'P');
+        private void WriteLatencyLog()
+        {
+            var dirName = "Assets/CSV_OUTPUT/";
+            var dir = new DirectoryInfo(dirName);
+            var fileName = "latency.log";
+            var path = dirName + fileName + ".csv";
+            if (!dir.Exists)
+            {
+                dir.Create();
+            }
+
+            if (!File.Exists(path))
+            {
+                // Create a file to write to.
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                    sw.WriteLine("sentTime,receivedTime,finalTime,latencySentFinal");
+                }
+            }
+
+            using (StreamWriter sw = File.AppendText(path))
+            {
+                foreach (var str in _latencyCsv)
+                {
+                    sw.WriteLine(str);
+                }
+                _latencyCsv.Clear();
+            }
+        }
+
+        private SocketMessageReader.Delimiter HEADER = SocketMessageReader.Header((Byte)'B');
         private const Byte SEPARATOR = (Byte)',';
         private SocketMessageReader _socketMessageReader;
 
@@ -200,5 +245,7 @@ namespace Janelia
 
         private long _latencySum = 0;
         private long _latencyCount = 0;
+
+        private List<string> _latencyCsv = new List<string>();
     }
 }
