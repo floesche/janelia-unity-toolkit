@@ -46,7 +46,7 @@ namespace Janelia
         public void Start()
         {
             if (debug)
-                Debug.Log(Now() + "SocketReader.Start() creating socket thread");
+                Debug.Log($"{Now()} SocketReader.Start() creating socket thread");
 
             _thread = usingUDP ?
                 new System.Threading.Thread(ThreadFunctionUDP) { IsBackground = true } :
@@ -82,7 +82,7 @@ namespace Janelia
             }
 
             if (debug)
-                Debug.Log(Now() + "SocketReader.Write() failed: thread not initialized");
+                Debug.Log($"{Now()} SocketReader.Write() failed: thread not initialized");
 
             return false;
         }
@@ -105,7 +105,7 @@ namespace Janelia
                     _writeLength = sizeToWrite;
 
                     if (debug)
-                        Debug.Log(Now() + "SocketReader.Write() Monitor.Pulse");
+                        Debug.Log($"{Now()} SocketReader.Write() Monitor.Pulse");
 
                     System.Threading.Monitor.Pulse(_writeLock);
                 }
@@ -117,7 +117,7 @@ namespace Janelia
             if (_thread != null)
             {
                 if (debug)
-                    Debug.Log(Now() + "SocketReader.OnDisable() aborting socket thread");
+                    Debug.Log($"{Now()} SocketReader.OnDisable() aborting socket thread");
 
                 _thread.Abort();
                 _thread = null;
@@ -126,7 +126,7 @@ namespace Janelia
             if (_writeThread != null)
             {
                 if (debug)
-                    Debug.Log(Now() + "SocketReader.OnDisable() aborting socket thread [write]");
+                    Debug.Log($"{Now()} SocketReader.OnDisable() aborting socket thread [write]");
 
                 _writeThread.Abort();
                 _writeThread = null;
@@ -138,7 +138,7 @@ namespace Janelia
             try
             {
                 if (debug)
-                    Debug.Log(Now() + "SocketReader using UDP");
+                    Debug.Log($"{Now()} SocketReader using UDP");
 
                 // The `UdpClient` class does not seem to support a version of `Receive` that will reuse a
                 // `byte []` buffer passed in as argument.  So, to avoid possible problems with garbage collection,
@@ -150,7 +150,7 @@ namespace Janelia
                 try
                 {
                     if (debug)
-                        Debug.Log(Now() + "SocketReader setting up socket for host '" + _hostname + "' port " + _port);
+                        Debug.Log($"{Now()} SocketReader setting up socket for host '{_hostname}' port {_port}");
 
                     socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                     socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.ReuseAddress, true);
@@ -167,7 +167,7 @@ namespace Janelia
                 catch (SocketException socketException)
                 {
                     if (debug)
-                        Debug.Log(Now() + "SocketReader cannot set up socket: " + socketException);
+                        Debug.Log($"{Now()} SocketReader cannot set up socket: {socketException}");
                     return;
                 }
 
@@ -177,7 +177,7 @@ namespace Janelia
                     try
                     {
                         if (debugSlowly)
-                            Debug.Log(Now() + "SocketReader waiting to receive UDP datagram");
+                            Debug.Log($"{Now()} SocketReader waiting to receive UDP datagram");
 
                         int length = socket.Receive(readBuffer);
 
@@ -185,18 +185,18 @@ namespace Janelia
                             forwardingSocket.SendTo(readBuffer, length, System.Net.Sockets.SocketFlags.None, forwardingEndpoint);
 
                         if (debugSlowly)
-                            Debug.Log("SocketReader read " + length + " bytes");
+                            Debug.Log($"SocketReader read {length} bytes");
 
                         _ringBuffer.Give(readBuffer);
                         Array.Clear(readBuffer, 0, length);
 
                         if (debugSlowly)
-                            Debug.Log("SocketReader added " + length + " bytes to the ring buffer");
+                            Debug.Log($"SocketReader added {length} bytes to the ring buffer");
                     }
                     catch (SocketException socketException)
                     {
                         if (debug)
-                            Debug.Log(Now() + "SocketReader exception when during receive: " + socketException);
+                            Debug.Log($"{Now()} SocketReader exception when during receive: {socketException}");
                     }
                 }
             }
@@ -206,7 +206,7 @@ namespace Janelia
         private void ThreadFunctionTCP()
         {
             if (debug)
-                Debug.Log(Now() + "SocketReader using TCP");
+                Debug.Log($"{Now()} SocketReader using TCP");
 
             Byte[] readBuffer = new Byte[_bufferSizeBytes];
             while (true)
@@ -214,7 +214,7 @@ namespace Janelia
                 try
                 {
                     if (debug)
-                        Debug.Log(Now() + "SocketReader trying to connect to server '" + _hostname + "' port " + _port);
+                        Debug.Log("{Now()} SocketReader trying to connect to server '{_hostname}' port {_port}");
 
                     _clientSocket = new TcpClient(_hostname, _port);
                     try
@@ -226,34 +226,34 @@ namespace Janelia
                         using (NetworkStream stream = _clientSocket.GetStream())
                         {
                             if (debug)
-                                Debug.Log(Now() + "SocketReader got stream connection to server '" + _hostname + "' port " + _port);
+                                Debug.Log($"{Now()} SocketReader got stream connection to server '{_hostname}' port {_port}");
 
                             int length;
                             while ((length = stream.Read(readBuffer, 0, readBuffer.Length)) != 0)
                             {
                                 if (debugSlowly)
-                                    Debug.Log("SocketReader read " + length + " bytes");
+                                    Debug.Log($"SocketReader read {length} bytes");
 
                                 _ringBuffer.Give(readBuffer);
                                 Array.Clear(readBuffer, 0, length);
 
                                 if (debugSlowly)
-                                    Debug.Log("SocketReader added " + length + " bytes to the ring buffer");
+                                    Debug.Log($"SocketReader added {length} bytes to the ring buffer");
                             }
                         }
                     }
                     catch (SocketException socketException)
                     {
                         if (debug)
-                            Debug.Log(Now() + "SocketReader reading socket exception: " + socketException);
+                            Debug.Log($"{Now()} SocketReader reading socket exception: {socketException}");
                     }
                 }
                 catch (SocketException socketException)
                 {
                     if (debug)
                     {
-                        Debug.Log(Now() + "SocketReader connection socket exception: " + socketException);
-                        Debug.Log(Now() + "SocketReader sleeping for " + _connectRetryMs + " ms before retrying");
+                        Debug.Log($"{Now()} SocketReader connection socket exception: {socketException}");
+                        Debug.Log($"{Now()} SocketReader sleeping for {_connectRetryMs}ms before retrying");
                     }
 
                     if (_writeThread != null)
@@ -279,7 +279,7 @@ namespace Janelia
                 using (NetworkStream stream = _clientSocket.GetStream())
                 {
                     if (debug)
-                        Debug.Log(Now() + "SocketReader [write] got stream connection to server '" + _hostname + "' port " + _port);
+                        Debug.Log($"{Now()} SocketReader [write] got stream connection to server '{_hostname} ' port {_port}");
 
                     lock (_writeThreadInitializedLock)
                     {
@@ -295,7 +295,7 @@ namespace Janelia
                             System.Threading.Monitor.Wait(_writeLock);
 
                             if (debug)
-                                Debug.Log(Now() + "SocketReader about to write " + _writeLength + " bytes");
+                                Debug.Log($"{Now()} SocketReader about to write {_writeLength} bytes");
 
                             stream.Write(_writeBuffer, _writeOffset, _writeLength);
                         }
@@ -305,7 +305,7 @@ namespace Janelia
             catch (SocketException socketException)
             {
                 if (debug)
-                    Debug.Log(Now() + "SocketReader [write] socket exception: " + socketException);
+                    Debug.Log($"{Now()} SocketReader [write] socket exception: {socketException}");
             }
         }
 
@@ -316,7 +316,7 @@ namespace Janelia
                 return "";
             }
             DateTime n = DateTime.Now;
-            return "[" + n.Hour + ":" + n.Minute + ":" + n.Second + ":" + n.Millisecond + "] ";
+            return $"[{n.Hour}:{n.Minute}:{n.Second}.{n.Millisecond}] ";
         }
 
         private string _hostname;

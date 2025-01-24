@@ -216,7 +216,7 @@ namespace Janelia
                 {
                     if (displayCamera.transform.parent == null)
                     {
-                        Debug.Log("Frame packing requires that display camera '" + displayCamera.name + "' have a parent.");
+                        Debug.Log($"Frame packing requires that display camera '{displayCamera.name}' have a parent.");
                         return false;
                     }
                     parents.Add(displayCamera.transform.parent);
@@ -241,7 +241,7 @@ namespace Janelia
                     if (match != null)
                     {
                         _packingSubject = match.gameObject;
-                        Debug.Log("Found packing subject '" + _packingSubject.name + "'");
+                        Debug.Log($"Found packing subject '{_packingSubject.name}'");
                         break;
                     }
                     else
@@ -411,7 +411,7 @@ namespace Janelia
             {
                 if (displayCameras[i] == null)
                 {
-                    Debug.LogWarning("AdjoiningDisplaysCamera: displayCameras[" + i + "] must be specified");
+                    Debug.LogWarning($"AdjoiningDisplaysCamera: displayCameras[{i}] must be specified");
                     result = false;
                 }
             }

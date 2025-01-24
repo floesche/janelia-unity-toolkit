@@ -118,9 +118,8 @@ public class ExampleUsingPanoramicDisplayCamera : MonoBehaviour
                 out surfaceDataX, out surfaceDataY, out surfaceDataZ, out surfaceDataMask, out surfaceDataColorCorrection,
                 brightener, colorCorrector);
 
-            Debug.Log("Please make the cylinder " + cylinderHeight + " units tall.");
-            Debug.Log("Please place each of the " + projectorCount + " projector(s) " + projectorDistanceXZ + 
-                " units from the cylinder center (horizontally).");
+            Debug.Log($"Please make the cylinder {cylinderHeight} units tall.");
+            Debug.Log($"Please place each of the {projectorCount} projector(s) {projectorDistanceXZ} units from the cylinder center (horizontally).");
 
             // Give that precomputed data to the script that will generate the panorama at runtime. This call would be necessary
             // for display surfaces other than a cylinder, but the values for the `surfaceData` textures would be different.

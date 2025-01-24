@@ -60,11 +60,11 @@ namespace Janelia
             if (!String.IsNullOrEmpty(_portname))
             {
                 if (debug)
-                    Debug.Log(Now() + "SerialReader using port '" + _portname + "'");
+                    Debug.Log($"{Now()} SerialReader using port '{_portname}'");
 
                 _port = new SerialPort(_portname, 9600);
                 if (debug)
-                    Debug.Log(Now() + "SerialReader.Start() opening serial port '" + _portname + "'");
+                    Debug.Log($"{Now()} SerialReader.Start() opening serial port '{_portname}'");
                 _port.Open();
 
                 if (_port.IsOpen)
@@ -72,7 +72,7 @@ namespace Janelia
                     if (_thread == null)
                     {
                         if (debug)
-                            Debug.Log(Now() + "SerialReader.Start() creating thread for '" + _portname + "'");
+                            Debug.Log($"{Now()} SerialReader.Start() creating thread for '{_portname}'");
                         _thread = new Thread(ThreadFunction) { IsBackground = true };
                     }
 
@@ -81,7 +81,7 @@ namespace Janelia
                 else
                 {
                     if (debug)
-                        Debug.Log(Now() + "SerialReader.Start() could not open serial port '" + _portname + "'");
+                        Debug.Log($"{Now()} SerialReader.Start() could not open serial port '{_portname}'");
                 }
             }
         }
@@ -94,12 +94,12 @@ namespace Janelia
         public void OnDisable()
         {
             if (debug)
-                Debug.Log(Now() + "SerialReader.OnDisable() for '" + _portname + "'");
+                Debug.Log($"{Now()} SerialReader.OnDisable() for '{_portname}'");
 
             if (_thread != null)
             {
                 if (debug)
-                    Debug.Log(Now() + "SerialReader.OnDisable() aborting socket thread for '" + _portname + "'");
+                    Debug.Log($"{Now()} SerialReader.OnDisable() aborting socket thread for '{_portname}'");
                 _thread.Abort();
                 try
                 {
@@ -137,7 +137,7 @@ namespace Janelia
                             sb.Append((int)b);
                             sb.Append(" ");
                         }
-                        Debug.Log(Now() + "SerialReader.ReadMore read " + numBytesRead + " bytes from '" + _portname + "': " + sb.ToString());
+                        Debug.Log($"{Now()} SerialReader.ReadMore read {numBytesRead} bytes from '{_portname}': {sb.ToString()}");
                     }
 
                     if (numBytesRead > 0)
@@ -145,7 +145,7 @@ namespace Janelia
                         if (_readBuffer[_readBufferOffset + numBytesRead - 1] == _terminator)
                         {
                             if (debugSlowly)
-                                Debug.Log(Now() + "SerialReader.ReadMore storing " + (_readBufferOffset + numBytesRead) + " bytes from '" + _portname + "'");
+                                Debug.Log($"{Now()} SerialReader.ReadMore storing {(_readBufferOffset + numBytesRead)} bytes from '{_portname}'");
 
                             _ringBuffer.Give(_readBuffer);
                             _readBufferOffset = 0;
@@ -159,7 +159,7 @@ namespace Janelia
                 }
                 catch (IOException exc)
                 {
-                    Debug.Log(Now() + "SerialReader.ReadMore + '" + _portname + "' exception: '" + exc.Message + "'");
+                    Debug.Log($"{Now()} SerialReader.ReadMore + '{_portname}' exception: '{exc.Message}'");
                 }
 
                 ReadMore();
@@ -173,7 +173,7 @@ namespace Janelia
                 return "";
             }
             DateTime n = DateTime.Now;
-            return "[" + n.Hour + ":" + n.Minute + ":" + n.Second + ":" + n.Millisecond + "] ";
+            return $"[{n.Hour}:{n.Minute}:{n.Second}.{n.Millisecond}] ";
         }
 
         private System.Threading.Thread _thread;

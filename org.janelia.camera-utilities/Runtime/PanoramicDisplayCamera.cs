@@ -138,10 +138,10 @@ namespace Janelia
 
             SetupSourceCameras(sourceWidth, sourceWidth);
 
-            Debug.Log("QualitySettings.GetQualityLevel() " + QualitySettings.GetQualityLevel() + " (of " + QualitySettings.count + " possible)");
-            Debug.Log("QualitySettings.antiAliasing " + QualitySettings.antiAliasing);
-            Debug.Log("QualitySettings.shadows " + QualitySettings.shadows);
-            Debug.Log("QualitySettings.shadowResolution " + QualitySettings.shadowResolution);
+            Debug.Log($"QualitySettings.GetQualityLevel() {QualitySettings.GetQualityLevel()} (of {QualitySettings.count}  possible)");
+            Debug.Log($"QualitySettings.antiAliasing {QualitySettings.antiAliasing}");
+            Debug.Log($"QualitySettings.shadows {QualitySettings.shadows}");
+            Debug.Log($"QualitySettings.shadowResolution {QualitySettings.shadowResolution}");
         }
 
         public void Update()
@@ -179,7 +179,7 @@ namespace Janelia
                 float mean = _profileDeltaTimeSum / _profileDeltaTimeCount;
                 float meanMs = Mathf.Round(mean * 1000);
                 float rate = Mathf.Round(1 / mean);
-                Debug.Log("PanoramicDisplayCamera mean time between frames: " + meanMs + " ms (" + rate + " Hz)");
+                Debug.Log($"PanoramicDisplayCamera mean time between frames: {meanMs} ms ({rate} Hz)");
                 _profileDeltaTimeSum = 0;
                 _profileDeltaTimeCount = 0;
             }
@@ -313,7 +313,7 @@ namespace Janelia
         {
             if (sourceCameras.Count() < 5)
             {
-                Debug.LogWarning("PanoramicDisplayCamera: expecting at least 5 source cameras instead of " + sourceCameras.Count());
+                Debug.LogWarning($"PanoramicDisplayCamera: expecting at least 5 source cameras instead of {sourceCameras.Count()}");
                 return;
             }
 

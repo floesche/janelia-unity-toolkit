@@ -78,11 +78,11 @@ namespace Janelia
 
             if (Input.anyKey || quitting)
             {
-                Debug.Log("Time: " + Time.time + "; frame: " + Time.frameCount + "; target deltaTime: " + _deltaTimeTarget);
-                Debug.Log("Count exceeding target + 1 ms: " + _deltaTimePlus1msTargetExceededCount);
+                Debug.Log($"Time: {Time.time}; frame: {Time.frameCount}; target deltaTime: {_deltaTimeTarget}");
+                Debug.Log($"Count exceeding target + 1 ms: {_deltaTimePlus1msTargetExceededCount}");
                 float avg = _deltaTimePlus1msTargetExceededSum / _deltaTimePlus1msTargetExceededCount;
-                Debug.Log("Sum excess: " + _deltaTimePlus1msTargetExceededSum + " sec");
-                Debug.Log("Average excess: " + avg + " sec");
+                Debug.Log($"Sum excess: {_deltaTimePlus1msTargetExceededSum} sec");
+                Debug.Log($"Average excess: {avg} sec");
             }
 
             if (quitting)

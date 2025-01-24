@@ -11,7 +11,7 @@ namespace Janelia
         {
             if (Display.displays.Length > 1)
             {
-                Debug.Log ("Activating multi-display for " + Display.displays.Length + " detected displays.");
+                Debug.Log($"Activating multi-display for {Display.displays.Length} detected displays.");
 
                 // `Display.displays[0]` is the primary (console) display, and always activated by default.
                 // So start at display index 1.
@@ -32,7 +32,7 @@ namespace Janelia
                     // And remember that the `targetDisplay` value is 0 based.
                     if (camera.targetDisplay == 0)
                     {
-                        Debug.Log("Camera '" + camera.name + "' should show on display 1");
+                        Debug.Log($"Camera '{camera.name}' should show on display 1");
                         return;
                     }
                 }
@@ -44,7 +44,7 @@ namespace Janelia
                     // Retarget the main camera if found.
                     if (camera.gameObject.tag == "Main Camera")
                     {
-                        Debug.Log("Temporarily resetting main camera '" + camera.name + "' to display 1");
+                        Debug.Log($"Temporarily resetting main camera '{camera.name}' to display 1");
                         camera.targetDisplay = 0;
                         return;
                     }
@@ -54,7 +54,7 @@ namespace Janelia
                     // Otherwise retarget the camera currently using display 2.
                     if (camera.targetDisplay == 1)
                     {
-                        Debug.Log("Temporarily resetting camera '" + camera.name + "' to display 1");
+                        Debug.Log($"Temporarily resetting camera '{camera.name}' to display 1");
                         camera.targetDisplay = 0;
                     }
                 }

@@ -7,7 +7,7 @@ namespace Janelia
     {
         public RingBuffer(int itemCount, int itemSizeBytes)
         {
-            Debug.Log("Creating RingBuffer with " + itemCount + " items of size " + itemSizeBytes + " bytes each");
+            Debug.Log($"Creating RingBuffer with {itemCount} items of size {itemSizeBytes} bytes each");
 
             _items = new Item[itemCount];
             for (int i = 0; i < itemCount; i++)

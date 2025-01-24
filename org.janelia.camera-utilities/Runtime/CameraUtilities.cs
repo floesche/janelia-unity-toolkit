@@ -103,21 +103,21 @@ namespace Janelia
             int targetDisplay = 2;
             for (int i = 0; i < SIDE_COUNT; ++i)
             {
-                name = "SourceCamera" + i.ToString() + "Side";
+                name = $"SourceCamera{i.ToString()}Side";
                 cameraEuler = new Vector3(0, cameraAngleY, 0);
                 camera = CreateCamera(name, fovDeg, aspect, near, far, targetDisplay++, cameraPosition, cameraEuler, parent);
                 result.Add(camera);
                 cameraAngleY += fovDeg;
             }
 
-            name = "SourceCamera" + SIDE_COUNT.ToString() + "Bottom";
+            name = $"SourceCamera{SIDE_COUNT.ToString()}Bottom";
             cameraEuler = new Vector3(90, 0, 0);
             camera = CreateCamera(name, fovDeg, aspect, near, far, targetDisplay++, cameraPosition, cameraEuler, parent);
             result.Add(camera);
 
             if (includeTop)
             {
-                name = "SourceCamera" + (SIDE_COUNT + 1).ToString() + "Top";
+                name = $"SourceCamera{(SIDE_COUNT + 1).ToString()}Top";
                 cameraEuler = new Vector3(-90, 0, 0);
                 camera = CreateCamera(name, fovDeg, aspect, near, far, targetDisplay++, cameraPosition, cameraEuler, parent);
                 result.Add(camera);
@@ -163,7 +163,7 @@ namespace Janelia
                 dataColorCorrection = null;
                 return;
             }
-            Debug.Log("SetupCylinderProjectorSurface computed projector distance (XZ) " + projDistXZ + ", cylinder height " + surfHeight);
+            Debug.Log($"SetupCylinderProjectorSurface computed projector distance (XZ) {projDistXZ}, cylinder height {surfHeight}");
 
             int dataWidth = projCount * projWidth;
             int dataHeight = projHeight;
@@ -218,7 +218,7 @@ namespace Janelia
             }
 
             long time1 = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            Debug.Log("SetupCylinderProjectorSurface took " + (time1 - time0) + " ms");
+            Debug.Log($"SetupCylinderProjectorSurface took {(time1 - time0)} ms");
         }
 
         // A function conforming to this delegate's signature can be given to `SetupCylinderProjectorSurface`
@@ -494,7 +494,7 @@ namespace Janelia
             if ((reportedProjPos != null) && !reportedProjPos[iProj])
             {
                 reportedProjPos[iProj] = true;
-                Debug.Log("Please position projector " + iProj + " at " + rayOrig);
+                Debug.Log($"Please position projector {iProj} at {rayOrig}");
             }
 
             return new Ray(rayOrig, rayDir);
@@ -520,7 +520,7 @@ namespace Janelia
             
             if (Mathf.Abs(2 * a) < EPS)
             {
-                Debug.Log("CylinderRayIntersection failed [1], projRay " + projRay);
+                Debug.Log($"CylinderRayIntersection failed [1], projRay {projRay}");
                 return Vector3.zero;
             }
 
@@ -539,7 +539,7 @@ namespace Janelia
 
             if (Mathf.Abs(cos) < EPS)
             {
-                Debug.Log("CylinderRayIntersection failed [2], projRay " + projRay);
+                Debug.Log($"CylinderRayIntersection failed [2], projRay {projRay}");
                 return Vector3.zero;
             }
 
