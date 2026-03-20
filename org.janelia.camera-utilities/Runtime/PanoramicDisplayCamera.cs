@@ -229,14 +229,20 @@ namespace Janelia
             _black = black;
         }
 
+        private void LateUpdate()
+        {
+            if (SourceCamerasAreValid())
+            {
+                RenderSourceCameras();
+            }
+        }
+
         public void OnRenderImage(RenderTexture input, RenderTexture output)
         {
             if (!SourceCamerasAreValid() ||!TexturesAreValid())
             {
                 return;
             }
-
-            RenderSourceCameras();
 
             // Do this every frame to suppress the warning:
             // "OnRenderImage() possibly didn't write anything to the destination texture!"
