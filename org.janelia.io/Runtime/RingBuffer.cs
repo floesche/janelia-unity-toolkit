@@ -20,6 +20,9 @@ namespace Janelia
             }
         }
 
+        // Debug counter: incremented each time an unread slot is overwritten.
+        public volatile int debugCounterOverwrite = 0;
+
         // Give the specified bytes to the next available buffer in the ring.  The data is copied.
         public void Give(Byte[] given)
         {
@@ -28,7 +31,10 @@ namespace Janelia
                 Buffer.BlockCopy(given, 0, _items[_iGive].bytes, 0, given.Length);
                 _items[_iGive].timestampMs = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 if (_count == _items.Length)
+                {
                     _iTake = (_iTake + 1) % _items.Length;
+                    debugCounterOverwrite++;
+                }
                 else
                     _count++;
                 _iGive = (_iGive + 1) % _items.Length;

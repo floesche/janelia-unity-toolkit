@@ -76,5 +76,40 @@ namespace Janelia
             didTake = buffer.Take(ref taken, ref timestamp);
             Assert.IsFalse(didTake);
         }
+
+        [Test]
+        public static void TestOverwriteDiagnosticCounter()
+        {
+            int ItemCount = 4;
+            int ItemSizeBytes = 32;
+            RingBuffer buffer = new RingBuffer(ItemCount, ItemSizeBytes);
+
+            Assert.AreEqual(0, buffer.debugCounterOverwrite);
+
+            buffer.Give(Encoding.ASCII.GetBytes("one"));
+            buffer.Give(Encoding.ASCII.GetBytes("two"));
+            buffer.Give(Encoding.ASCII.GetBytes("three"));
+            buffer.Give(Encoding.ASCII.GetBytes("four"));
+            Assert.AreEqual(0, buffer.debugCounterOverwrite);
+
+            buffer.Give(Encoding.ASCII.GetBytes("five"));
+            Assert.AreEqual(1, buffer.debugCounterOverwrite);
+
+            buffer.Give(Encoding.ASCII.GetBytes("six"));
+            Assert.AreEqual(2, buffer.debugCounterOverwrite);
+
+            Byte[] taken = new Byte[ItemSizeBytes];
+            long timestamp = 0;
+            buffer.Take(ref taken, ref timestamp);
+            buffer.Take(ref taken, ref timestamp);
+
+            buffer.Give(Encoding.ASCII.GetBytes("seven"));
+            Assert.AreEqual(2, buffer.debugCounterOverwrite);
+            buffer.Give(Encoding.ASCII.GetBytes("eight"));
+            Assert.AreEqual(2, buffer.debugCounterOverwrite);
+
+            buffer.Give(Encoding.ASCII.GetBytes("nine"));
+            Assert.AreEqual(3, buffer.debugCounterOverwrite);
+        }
     }
 }

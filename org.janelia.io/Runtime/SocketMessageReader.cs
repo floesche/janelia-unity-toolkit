@@ -99,6 +99,10 @@ namespace Janelia
             _socketReader.OnDisable();
         }
 
+        // Diagnostic counters exposed from the underlying socket reader.
+        public int DebugPacketCounter => _socketReader.debugPacketCounter;
+        public int DebugCounterOverwrite => _socketReader.DebugCounterOverwrite;
+
         private void SeparateMessages(Byte[] dataFromSocket, ref List<int> indices)
         {
             indices.Clear();
