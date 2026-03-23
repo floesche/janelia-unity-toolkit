@@ -20,8 +20,8 @@ namespace Janelia
             }
         }
 
-        // Debug counter: incremented each time an unread slot is overwritten.
-        public volatile int debugCounterOverwrite = 0;
+        // Incremented each time an unread slot is overwritten.
+        public volatile int overwriteCount = 0;
 
         // Give the specified bytes to the next available buffer in the ring.  The data is copied.
         public void Give(Byte[] given)
@@ -33,7 +33,7 @@ namespace Janelia
                 if (_count == _items.Length)
                 {
                     _iTake = (_iTake + 1) % _items.Length;
-                    debugCounterOverwrite++;
+                    overwriteCount++;
                 }
                 else
                     _count++;

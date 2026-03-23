@@ -100,8 +100,8 @@ namespace Janelia
         }
 
         // Diagnostic counters exposed from the underlying socket reader.
-        public int DebugPacketCounter => _socketReader.debugPacketCounter;
-        public int DebugCounterOverwrite => _socketReader.DebugCounterOverwrite;
+        public int PacketCount => _socketReader.packetCount;
+        public int OverwriteCount => _socketReader.OverwriteCount;
 
         private void SeparateMessages(Byte[] dataFromSocket, ref List<int> indices)
         {
