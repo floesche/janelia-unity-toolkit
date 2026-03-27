@@ -134,6 +134,7 @@ Shader "Unlit/PanoramicDisplay"
 
             sampler2D _TexMask;
             float _MaskScale;
+            int _InvertColorAtMask0;
 
             sampler2D _TexColorCorrection;
             float _ColorCorrectionScale;
@@ -333,8 +334,18 @@ Shader "Unlit/PanoramicDisplay"
                 }
 
                 float mask0 = tex2D(_TexMask, i.uv);
-                float mask = (1 - _MaskScale * mask0);
-                result *= mask;
+                if (_InvertColorAtMask0)
+                {
+                    // Calibration overlay mode: pattern lines (mask0 ≈ 0) are color-inverted
+                    // for guaranteed contrast against any background; other pixels are unchanged.
+                    float patternWeight = 1.0 - mask0;
+                    result = lerp(result, fixed4(1, 1, 1, 1) - result, patternWeight);
+                }
+                else
+                {
+                    float mask = (1 - _MaskScale * mask0);
+                    result *= mask;
+                }
 
                 fixed4 colorCorrection = tex2D(_TexColorCorrection, i.uv);
                 fixed4 scaledCorrection = fixed4(1, 1, 1, 1) - _ColorCorrectionScale * colorCorrection;

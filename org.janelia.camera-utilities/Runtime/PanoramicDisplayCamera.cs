@@ -31,6 +31,7 @@ namespace Janelia
         // `SetDisplaySurfaceData`, below, and also in `ExampleUsingPanoramiceDisplayCamera.cs`.
         public float surfaceMaskScale = 1;
         public float surfaceColorCorrectionScale = 0;
+        public bool invertColorAtMask0 = false;
 
         // If the panorama is to be displayed with more than one external display or projector, the images for
         // all the displays are adjoined horizontally into a single wide image, and this image "bleeds" from
@@ -173,6 +174,7 @@ namespace Janelia
         {
             _material.SetFloat("_MaskScale", surfaceMaskScale);
             _material.SetFloat("_ColorCorrectionScale", surfaceColorCorrectionScale);
+            _material.SetInt("_InvertColorAtMask0", invertColorAtMask0 ? 1 : 0);
 
 #if PROGRESS_BOX
             if (Input.GetKeyDown(KeyCode.P))
