@@ -134,6 +134,7 @@ Shader "Unlit/PanoramicDisplay"
 
             sampler2D _TexMask;
             float _MaskScale;
+            int _InvertColorAtMask0;
 
             sampler2D _TexColorCorrection;
             float _ColorCorrectionScale;
@@ -333,7 +334,7 @@ Shader "Unlit/PanoramicDisplay"
                 }
 
                 float mask0 = tex2D(_TexMask, i.uv);
-                if (_MaskScale < -0.5)
+                if (_InvertColorAtMask0)
                 {
                     // Calibration overlay mode: pattern lines (mask0 ≈ 0) are color-inverted
                     // for guaranteed contrast against any background; other pixels are unchanged.

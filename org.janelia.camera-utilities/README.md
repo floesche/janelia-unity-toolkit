@@ -66,7 +66,7 @@ This compensating texture can be generated with the `Janelia.CameraUtilities.Set
 
 #### Calibration Overlay Mode
 
-Setting `surfaceMaskScale` to a negative value (e.g., `-1`) activates a calibration overlay mode in the `PanoramicDisplay` shader. In this mode, pixels where the mask texture is dark (value near 0, i.e., pattern lines) are rendered as the color-inverse of the scene, guaranteeing visible contrast against any background. Pixels where the mask texture is bright (value near 1) are left unchanged. This is useful for aligning the projector to the display surface, since the calibration pattern remains visible regardless of the scene content being projected.
+Setting `invertColorAtMask0` to `true` on `PanoramicDisplayCamera` activates a calibration overlay mode in the `PanoramicDisplay` shader. In this mode, pixels where the mask texture is dark (value near 0, i.e., pattern lines) are rendered as the color-inverse of the scene, guaranteeing visible contrast against any background. Pixels where the mask texture is bright (value near 1) are left unchanged. This is useful for aligning the projector to the display surface, since the calibration pattern remains visible regardless of the scene content being projected.
 
 Screen curvature can also distort the color near the borders between projectors, so `PanoramicDisplayCamera` also takes a color correction texture. This correction texture can be generated with the `Janelia.CameraUtilities.SetupCylinderProjectorEdgeColorCorrector` function, which also uses the cosine law and includes user-defined parameters for the color to correct and for scaling.
 
@@ -84,8 +84,11 @@ Please make the cylinder 5.100435 units tall.
 
 Using a display surface other than a cylinder involves calling `PanoramicDisplayCamera.SetDisplaySurfaceData` with custom arrays that describe where the pixels of the projectors map to 3D positions on the display surface. Custom arrays are also useful for a cylindrical display surface if there is to be regions of overlap between the images from adjacent projectors.
 
-The `PanoramicDisplayCamera` optionally displays a _progress box_, a small square that changes from black to white on alternate frames. The true frame rate can be verified by positioning a photodiode where the progress box appears on the display, and observing the photodiode's signal with an oscilloscope. The related fields on `PanoramicDisplayCamera` are:
+The public fields on `PanoramicDisplayCamera` are:
 
-- `showProgressBox`: set to `true` to make the progress box visible. The `p` key interactively toggles this value. Changes are saved across sessions via `PlayerPrefs`.
+- `surfaceMaskScale`: a 0-to-1 scaling factor for brightness compensation using the mask texture. Setting it to 0 disables compensation, and setting it to 1 gives full compensation. See the `ExampleUsingPanoramicDisplayCamera` script.
+- `surfaceColorCorrectionScale`: a 0-to-1 scaling factor for color correction. Setting it to 0 disables color correction.
+- `invertColorAtMask0`: set to `true` to activate [calibration overlay mode](#calibration-overlay-mode), where pixels at dark mask values are color-inverted for guaranteed contrast against any background.
+- `showProgressBox`: set to `true` to make a _progress box_ visible, a small square that changes from black to white on alternate frames. The true frame rate can be verified by positioning a photodiode where the progress box appears on the display, and observing the photodiode's signal with an oscilloscope. The `p` key interactively toggles this value. Changes are saved across sessions via `PlayerPrefs`.
 - `progressBoxPosition`: a `Vector2Int` whose value is the position, in pixels, of the progress box. The `w`, `a`, `s,` and ,`d` keys interactively change this position. Changes are saved across sessions via `PlayerPrefs`.
 - `progressBoxSize`: the box's width (and height, since the box is a square), in pixels.
