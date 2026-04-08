@@ -71,20 +71,23 @@ VR/more-unity-packages/edu.unversity.used-by-main
 This heuristic for resolving packages is bypassed if the manifest file lists packages with full path names like:
 `"C:\\Users\\hubbardp\\VR\\janelia-unity-toolkit\\org.janelia.general"`.
 
+The dependencies of a package are determined by the packages listed in the `"references"` section of its [assembly definition (.asmdef) files](https://docs.unity3d.com/2023.2/Documentation/Manual/ScriptCompilationAssemblyDefinitionFiles.html). Packages mentioned in the `"versionDefines"` section are considered optional and are omitted (unless mentioned explicitly in a manifest file).
+
+
 ## Testing
 
 To run this package's unit tests, use the following steps:
 1. Create a new Unity project and add this package.
 2. In the directory for the new project, in its "Packages" subdirectory, edit the "manifest.json" file to add a `"testables"` section as follows:
-```
-{
-  "dependencies": {
-   ...
-  },
-  "testables": ["org.janelia.package-installer"]
-}
-```
-Note the comma separating the `"dependencies"` and `"testables"` sections.
+    ```
+    {
+    "dependencies": {
+    ...
+    },
+    "testables": ["org.janelia.package-installer"]
+    }
+    ```
+    Note the comma separating the `"dependencies"` and `"testables"` sections.
 3. In the Unity editor's "Window" menu, under "General", choose "Test Runner".
 4. In the new "Test Runner" window, choose the "EditMode" tab.
 5. There should be an item for the new project, with items underneath it for "Janelia.Package-installer.EditorTests.dll", etc.
