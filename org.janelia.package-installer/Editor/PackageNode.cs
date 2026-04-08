@@ -96,6 +96,21 @@ namespace Janelia
                         int i = reference.LastIndexOf(".");
                         string referencePkg = reference.Substring(0, i).ToLower();
 
+                        bool optional = false;
+                        foreach (VersionDefine verDef in asmdef.versionDefines)
+                        {
+                            if (verDef.name.Contains(referencePkg))
+                            {
+                                optional = true;
+                                break;
+                            }
+                        }
+                        if (optional)
+                        {
+                            Debug.Log("For \"" + pkgDir + "\" skipping optional dependency \"" + referencePkg + "\"");
+                            continue;
+                        }
+
                         foreach (string rootDir in rootDirs)
                         {
                             string referencePkgDir = rootDir + Path.DirectorySeparatorChar + "org." + referencePkg;
@@ -124,13 +139,23 @@ namespace Janelia
         private struct Asmdef
         {
             public string[] references;
+            public List<VersionDefine> versionDefines;
 
             // This constructor prevents a spurious compiler warning about `references` never getting assigned.
             Asmdef(string[] refs = null)
             {
                 references = refs;
+                versionDefines = new List<VersionDefine>();
             }
         };
+
+        [Serializable]
+        private struct VersionDefine
+        {
+            public string name;
+            public string expression;
+            public string define;
+        }
 
         private static Dictionary<string, PackageNode> _pkgDirToNode = new Dictionary<string, PackageNode>();
     }
